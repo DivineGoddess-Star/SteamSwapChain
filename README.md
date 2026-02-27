@@ -2,8 +2,19 @@
 
 A generic DirectX 11 in-process overlay framework built on **Dear ImGui** and **MinHook**.
 
-Rather than relying on hardcoded vtable offsets — which break on every game or runtime update — this project locates `IDXGISwapChain::Present` and `IDXGISwapChain::ResizeBuffers` hook targets by scanning **Steam's overlay DLL at runtime**. Hook addresses are resolved dynamically on every injection, making the overlay resilient to Steam updates with zero maintenance.
+Steam's `GameOverlayRenderer64.dll` hooks `IDXGISwapChain::Present` and
+`IDXGISwapChain::ResizeBuffers` into every game it runs. Instead of creating a
+dummy D3D11 device to locate the swap chain vtable — the conventional approach —
+this project **hooks Steam's hook functions directly**. We scan the overlay DLL
+at runtime to find where Steam's detours live in memory, then insert our frame at
+the front of that existing call chain. The practical difference is minor — locating
+a swap chain via a dummy device is trivial — but there are two concrete benefits.
+First, hook targets are resolved dynamically on every injection with **no hardcoded
+addresses**. Second, some games perform integrity checks on their own swap chain
+vtable and will detect or crash on unexpected patches — since we never touch the
+game's vtable at all, we inherit whatever trust Steam's hooks already have.
 
+> **Note:** This method is not undetected as-is.
 ---
 
 ## How It Works
