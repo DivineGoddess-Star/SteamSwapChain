@@ -157,40 +157,6 @@ A debug console opens automatically on injection. Expected output on success:
 [Overlay] Overlay ready
 ```
 
----
-
-## Extending the Menu
-
-All menu content lives in `SteamSwapChain/Overlay/overlay.cpp`.
-
-Add tabs by defining a new `static void Tab_Foo()` function and registering it in `Overlay_Draw()`:
-
-```cpp
-static void Tab_Foo()
-{
-    ImGui::Text("Hello from Tab_Foo");
-}
-
-void Overlay_Draw()
-{
-    ImGui::SetNextWindowSize({ 400.f, 300.f }, ImGuiCond_FirstUseEver);
-    ImGui::Begin("Game Overlay  |  INSERT to toggle", &g_ShowMenu,
-        ImGuiWindowFlags_NoCollapse);
-
-    if (ImGui::BeginTabBar("##MainTabs"))
-    {
-        if (ImGui::BeginTabItem("Visuals")) { Tab_Visuals(); ImGui::EndTabItem(); }
-        if (ImGui::BeginTabItem("Foo"))     { Tab_Foo();     ImGui::EndTabItem(); } // ← new
-        if (ImGui::BeginTabItem("Misc"))    { Tab_Misc();    ImGui::EndTabItem(); }
-        if (ImGui::BeginTabItem("Info"))    { Tab_Info();    ImGui::EndTabItem(); }
-        ImGui::EndTabBar();
-    }
-
-    ImGui::End();
-}
-```
-
----
 
 ## Update Resilience
 
